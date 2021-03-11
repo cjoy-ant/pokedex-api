@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
+const POKEDEX = require("./pokedex.json");
 
 const app = express();
 const PORT = 8000;
@@ -52,7 +53,48 @@ function handleGetTypes(req, res) {
 }
 
 function handleGetPokemon(req, res) {
-  res.send("Hello, Pokemon!");
+  const { name, type } = req.query;
+  let results = POKEDEX.pokemon;
+
+  if (name) {
+    results = results.filter((pokemon) =>
+      pokemon.name.toLowerCase().includes(name.toLowerCase())
+    );
+  }
+
+  // if (type) {
+  // results = results.filter((pokemon) => {
+  // for (i = 0; i < pokemon.type.length; i++) {
+  // pokemon.type[i].toLowerCase();
+  // }
+  // })
+  // .filter((pokemon) => pokemon.type.includes(type.toLowerCase()));
+  // }
+
+  if (type) {
+    results = results.filter((pokemon) => pokemon.type.includes(type));
+  }
+
+  res.json(results);
+
+  //let response = POKEDEX.pokemon;
+
+  // // filter our pokemon by name if name query param is present
+  // if (req.query.name) {
+  // response = response.filter((pokemon) =>
+  // // case insensitive searching
+  // pokemon.name.toLowerCase().includes(req.query.name.toLowerCase())
+  // );
+  // }
+
+  // // filter our pokemon by type if type query param is present
+  // if (req.query.type) {
+  // response = response.filter((pokemon) =>
+  // pokemon.type.includes(req.query.type)
+  // );
+  // }
+
+  //res.json(response);
 }
 
 app.listen(PORT, () => {
