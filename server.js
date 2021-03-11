@@ -1,10 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 
 const app = express();
-
-app.use(morgan("dev"));
-
+const PORT = 8000;
 const validTypes = [
   `Bug`,
   `Dark`,
@@ -26,13 +25,35 @@ const validTypes = [
   `Water`,
 ];
 
+app.use(morgan("dev"));
+app.use(validateBearerToken);
+
+app.get("/types", handleGetTypes);
+app.get("/pokemon", handleGetPokemon);
+
+function validateBearerToken(req, res, next) {
+  // const bearerToken = req.get("Authorization").split(" ")[1];
+  const authToken = req.get("Authorization");
+  const apiToken = process.env.API_TOKEN;
+
+  //if (bearerToken !== apiToken) {
+  //  return res.status(401).json({ error: "Unauthorized request" });
+  //}
+
+  if (!authToken || authToken.split(" ")[1] !== apiToken) {
+    return res.status(401).json({ error: "Unauthorized Request" });
+  }
+  // move to the next middleware
+  next();
+}
+
 function handleGetTypes(req, res) {
   res.json(validTypes);
 }
 
-app.get("/types", handleGetTypes);
-
-const PORT = 8000;
+function handleGetPokemon(req, res) {
+  res.send("Hello, Pokemon!");
+}
 
 app.listen(PORT, () => {
   console.log(`Server listening at http://localhost:${PORT}`);
