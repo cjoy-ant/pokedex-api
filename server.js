@@ -1,7 +1,9 @@
 require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
+const helmet = require("helmet");
 const cors = require("cors");
+
 const POKEDEX = require("./pokedex.json");
 
 const app = express();
@@ -28,6 +30,8 @@ const validTypes = [
 ];
 
 app.use(morgan("dev"));
+app.use(helmet());
+// helmet should be used BEFORE cors
 app.use(cors());
 app.use(validateBearerToken);
 
