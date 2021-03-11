@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const POKEDEX = require("./pokedex.json");
 
 const app = express();
@@ -27,6 +28,7 @@ const validTypes = [
 ];
 
 app.use(morgan("dev"));
+app.use(cors());
 app.use(validateBearerToken);
 
 app.get("/types", handleGetTypes);
