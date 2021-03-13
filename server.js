@@ -7,7 +7,7 @@ const cors = require("cors");
 const POKEDEX = require("./pokedex.json");
 
 const app = express();
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 const validTypes = [
   `Bug`,
   `Dark`,
@@ -29,9 +29,20 @@ const validTypes = [
   `Water`,
 ];
 
-app.use(morgan("dev"));
+const morganSetting = process.env.NODE_ENV === "production" ? "tiny" : "common";
+app.use(morgan(morganSetting));
+
+app.use((error, req, res, next) => {
+  let response;
+  if (process.env.NODE_ENV === "production") {
+    response = { error: { message: "server error" } };
+  } else {
+    response = { error };
+  }
+  res.status(500).json(response);
+});
+
 app.use(helmet());
-// helmet should be used BEFORE cors
 app.use(cors());
 app.use(validateBearerToken);
 
